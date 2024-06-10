@@ -1,6 +1,8 @@
 import os
+import asyncio
+from ollama import AsyncClient
 from crewai import Agent, Task, Crew, Process
-from crewai_tools import SerperDevTool
+from IPython.display import Markdown, display
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 os.environ["SERPER_API_KEY"] = "Your Key" # serper.dev API key
@@ -22,7 +24,7 @@ os.environ["SERPER_API_KEY"] = "Your Key" # serper.dev API key
 #
 # from langchain_openai import ChatOpenAI
 
-search_tool = SerperDevTool()
+
 
 # Define your agents with roles and goals
 researcher = Agent(
@@ -35,7 +37,6 @@ researcher = Agent(
   allow_delegation=False,
   # You can pass an optional llm attribute specifying what model you wanna use.
   # llm=ChatOpenAI(model_name="gpt-3.5", temperature=0.7),
-  tools=[search_tool]
 )
 writer = Agent(
   role='Tech Content Strategist',
