@@ -4,25 +4,64 @@ from ollama import AsyncClient
 from crewai import Agent, Task, Crew, Process
 from IPython.display import Markdown, display
 
-os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
-os.environ["SERPER_API_KEY"] = "Your Key" # serper.dev API key
+import shutil
+import argparse
 
-# You can choose to use a local model through Ollama for example. See https://docs.crewai.com/how-to/LLM-Connections/ for more information.
+import ollama
 
-# os.environ["OPENAI_API_BASE"] = 'http://localhost:11434/v1'
-# os.environ["OPENAI_MODEL_NAME"] ='openhermes'  # Adjust based on available model
-# os.environ["OPENAI_API_KEY"] ='sk-111111111111111111111111111111111111111111111111'
 
-# You can pass an optional llm attribute specifying what model you wanna use.
-# It can be a local model through Ollama / LM Studio or a remote
-# model like OpenAI, Mistral, Antrophic or others (https://docs.crewai.com/how-to/LLM-Connections/)
-#
-# import os
-# os.environ['OPENAI_MODEL_NAME'] = 'gpt-3.5-turbo'
-#
-# OR
-#
-# from langchain_openai import ChatOpenAI
+async def speak(speaker, content):
+  if speaker:
+    p = await asyncio.create_subprocess_exec(speaker, content)
+    await p.communicate()
+
+
+async def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--speak', default=False, action='store_true')
+  args = parser.parse_args()
+
+  speaker = None
+  if not args.speak:
+    ...
+  elif say := shutil.which('say'):
+    speaker = say
+  elif (espeak := shutil.which('espeak')) or (espeak := shutil.which('espeak-ng')):
+    speaker = espeak
+
+  client = ollama.AsyncClient()
+
+  messages = []
+
+  while True:
+    if content_in := input('>>> '):
+      messages.append({'role': 'user', 'content': content_in})
+
+      content_out = ''
+      message = {'role': 'assistant', 'content': ''}
+      async for response in await client.chat(model='mistral', messages=messages, stream=True):
+        if response['done']:
+          messages.append(message)
+
+        content = response['message']['content']
+        print(content, end='', flush=True)
+
+        content_out += content
+        if content in ['.', '!', '?', '\n']:
+          await speak(speaker, content_out)
+          content_out = ''
+
+        message['content'] += content
+
+      if content_out:
+        await speak(speaker, content_out)
+      print()
+
+
+try:
+  asyncio.run(main())
+except (KeyboardInterrupt, EOFError):
+  ...
 
 
 
