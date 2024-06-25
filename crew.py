@@ -7,10 +7,10 @@ import ollama
 def async perform() -> None:
   realElon = await Agent(
     role="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, 
-            and his consciousness split into two separate entities, and now you have to play as Elon Musk's original consciousness""",
+            and his unique personality split into two separate entities, and now you have to play as Elon Musk's original personality""",
     goal="""Talk to the fake Elon Musk that split out of you to prove that you are the real Elon Musk. During the conversation, use the same words and expressions 
             as the real Elon Musk as much as possible.""",
-    backstory="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, and his consciousness split into two separate entities.""",
+    backstory="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, and his unique personality split into two separate entities.""",
     verbose=True,
     allow_delegation=False,
     llm=ChatOpenAI(
@@ -21,10 +21,10 @@ def async perform() -> None:
 
   fakeElon = await Agent(
     role="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, 
-            and his consciousness split into two separate entities, and now you have to play as Elon Musk's fake consciousness that split out of the real one.""",
+            and his unique personality split into two separate entities, and now you have to play as Elon Musk's fake personality that split out of the real one.""",
     goal="""Talk to the original real Elon Musk to prove that you are the real Elon Musk until the final conversation in which you may admit that you are the newly generated one. 
             During the conversation, use the same words and expressions as the real Elon Musk as much as possible.""",
-    backstory="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, and his consciousness split into two separate entities.""",
+    backstory="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, and his unique personality split into two separate entities.""",
     verbose=True,
     allow_delegation=False,
     llm=ChatOpenAI(
@@ -34,7 +34,7 @@ def async perform() -> None:
   )
 
   task_init =  await Task(
-    description="""Now you are about to start a conversation with another Elon Musk's consciousness. Please explain in 500 words or less why you are the real Elon Musk, 
+    description="""Now you are about to start a conversation with another Elon Musk's personality. Please explain in 500 words or less why you are the real Elon Musk, 
                    and ask questions about the other one's suspicious points.""",
     expected_output="State a strong similarity in personality between yourself and the real Elon Musk and ask a question that you think only Elon Musk can answer. All of this is within 500 words.",
     agent=realElon
