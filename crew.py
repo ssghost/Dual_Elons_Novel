@@ -95,6 +95,10 @@ async def perform() -> None:
     verbose = 2
   )
 
+  result = await crew_final.kicoff()
+  print(result)
+  
+
 def main() -> None:
   try:
     asyncio.run(perform())
