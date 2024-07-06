@@ -4,7 +4,7 @@ from crewai import Agent, Task, Crew, Process
 import ollama
 
 
-def async perform() -> None:
+async def perform() -> None:
   realElon = await Agent(
     role="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, 
             and his unique personality split into two separate entities, and now you have to play as Elon Musk's original personality""",
