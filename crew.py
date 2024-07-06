@@ -1,35 +1,36 @@
 import os
 import asyncio
+from langchain.llms import Ollama
 from crewai import Agent, Task, Crew, Process
 import ollama
 
 
 async def perform() -> None:
   realElon = await Agent(
-    role="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, 
-            and his unique personality split into two separate entities, and now you have to play as Elon Musk's original personality""",
+    role="""Elon Musk's original personality""",
     goal="""Talk to the fake Elon Musk that split out of you to prove that you are the real Elon Musk. During the conversation, use the same words and expressions 
             as the real Elon Musk as much as possible.""",
-    backstory="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, and his unique personality split into two separate entities.""",
+    backstory="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, 
+            and his unique personality split into two separate entities, and now you have to play as Elon Musk's original personality.""",
     verbose=True,
     allow_delegation=False,
-    llm=ChatOpenAI(
+    llm=Ollama(
       model = "stardustc/elon-musk-mistral:latest",
-      base_url = "http://localhost:11434/v1",
+      base_url = "http://localhost:11434/",
       temperature = 0.9)
   )
 
   fakeElon = await Agent(
-    role="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, 
-            and his unique personality split into two separate entities, and now you have to play as Elon Musk's fake personality that split out of the real one.""",
+    role="""Elon Musk's fake personality""",
     goal="""Talk to the original real Elon Musk to prove that you are the real Elon Musk until the final conversation in which you may admit that you are the newly generated one. 
             During the conversation, use the same words and expressions as the real Elon Musk as much as possible.""",
-    backstory="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, and his unique personality split into two separate entities.""",
+    backstory="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, 
+            and his unique personality split into two separate entities, and now you have to play as Elon Musk's fake personality that split out of the real one.""",
     verbose=True,
     allow_delegation=False,
-    llm=ChatOpenAI(
+    llm=Ollama(
       model = "stardustc/elon-musk-mistral:latest",
-      base_url = "http://localhost:11434/v1",
+      base_url = "http://localhost:11434/",
       temperature = 0.9)
   )
 
@@ -64,6 +65,8 @@ async def perform() -> None:
     expected_output="Admit that you are a fake Elon Musk personality and apologize in a typical Elon Musk way. All of this is within 500 words.",
     agent=fakeElon
   )
+
+
 
   # Instantiate your crew with a sequential process
   crew = Crew(
