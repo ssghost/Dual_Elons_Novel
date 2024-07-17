@@ -99,6 +99,7 @@ async def perform() -> None:
 
     result = await crew_final.kicoff()
     file.write("fakeElon:"+result+"\n")
+    file.close()
   
 
 def main() -> None:
