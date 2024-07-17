@@ -5,98 +5,100 @@ from crewai import Agent, Task, Crew
 
 
 async def perform() -> None:
-  realElon = await Agent(
-    role="""Elon Musk's original personality""",
-    goal="""Talk to the fake Elon Musk that split out of you to prove that you are the real Elon Musk. During the conversation, use the same words and expressions 
-            as the real Elon Musk as much as possible.""",
-    backstory="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, 
-            and his unique personality split into two separate entities, and now you have to play as Elon Musk's original personality.""",
-    verbose=True,
-    allow_delegation=False,
-    llm=Ollama(
-      model = "stardustc/elon-musk-mistral:latest",
-      base_url = "http://localhost:11434/",
-      temperature = 0.9)
-  )
+  with open("./story.txt", mode='a') as file:
+    realElon = await Agent(
+      role="""Elon Musk's original personality""",
+      goal="""Talk to the fake Elon Musk that split out of you to prove that you are the real Elon Musk. During the conversation, use the same words and expressions 
+              as the real Elon Musk as much as possible.""",
+      backstory="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, 
+              and his unique personality split into two separate entities, and now you have to play as Elon Musk's original personality.""",
+      verbose=True,
+      allow_delegation=False,
+      llm=Ollama(
+        model = "stardustc/elon-musk-mistral:latest",
+        base_url = "http://localhost:11434/",
+        temperature = 0.9)
+    )
 
-  fakeElon = await Agent(
-    role="""Elon Musk's fake personality""",
-    goal="""Talk to the original real Elon Musk to prove that you are the real Elon Musk until the final conversation in which you may admit that you are the newly generated one. 
-            During the conversation, use the same words and expressions as the real Elon Musk as much as possible.""",
-    backstory="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, 
-            and his unique personality split into two separate entities, and now you have to play as Elon Musk's fake personality that split out of the real one.""",
-    verbose=True,
-    allow_delegation=False,
-    llm=Ollama(
-      model = "stardustc/elon-musk-mistral:latest",
-      base_url = "http://localhost:11434/",
-      temperature = 0.9)
-  )
+    fakeElon = await Agent(
+      role="""Elon Musk's fake personality""",
+      goal="""Talk to the original real Elon Musk to prove that you are the real Elon Musk until the final conversation in which you may admit that you are the newly generated one. 
+              During the conversation, use the same words and expressions as the real Elon Musk as much as possible.""",
+      backstory="""In a consciousness-to-data experiment, Elon Musk, the CEO of Neuralink, used himself as a sample. During the experiment, the machine suddenly malfunctioned, 
+              and his unique personality split into two separate entities, and now you have to play as Elon Musk's fake personality that split out of the real one.""",
+      verbose=True,
+      allow_delegation=False,
+      llm=Ollama(
+        model = "stardustc/elon-musk-mistral:latest",
+        base_url = "http://localhost:11434/",
+        temperature = 0.9)
+    )
 
-  task_init =  await Task(
-    description="""Now you are about to start a conversation with another Elon Musk's personality. Please explain in 500 words or less why you are the real Elon Musk, 
-                   and ask questions about the other one's suspicious points.""",
-    expected_output="State a strong similarity in personality between yourself and the real Elon Musk and ask a question that you think only Elon Musk can answer. All of this is within 500 words.",
-    agent=realElon
-  )
+    task_init =  await Task(
+      description="""Now you are about to start a conversation with another Elon Musk's personality. Please explain in 500 words or less why you are the real Elon Musk, 
+                    and ask questions about the other one's suspicious points.""",
+      expected_output="State a strong similarity in personality between yourself and the real Elon Musk and ask a question that you think only Elon Musk can answer. All of this is within 500 words.",
+      agent=realElon
+    )
 
-  desc_real2fake = "Now the real Elon Musk personality said the following words to you, try to response: "
+    desc_real2fake = "Now the real Elon Musk personality said the following words to you, try to response: "
 
-  desc_fake2real = "Now the fake Elon Musk personality said the following words to you, try to response: " 
+    desc_fake2real = "Now the fake Elon Musk personality said the following words to you, try to response: " 
 
-  task_final = await Task(
-    description="""Now you are about to admit that you are the fake personality of Elon Musk generated by the failed experiment. 
-                   Please state this fact in 500 words or less and end this conversation.""",
-    expected_output="Admit that you are a fake Elon Musk personality and apologize in a typical Elon Musk way. All of this is within 500 words.",
-    agent=fakeElon
-  )
+    task_final = await Task(
+      description="""Now you are about to admit that you are the fake personality of Elon Musk generated by the failed experiment. 
+                    Please state this fact in 500 words or less and end this conversation.""",
+      expected_output="Admit that you are a fake Elon Musk personality and apologize in a typical Elon Musk way. All of this is within 500 words.",
+      agent=fakeElon
+    )
 
-  crew_init = await Crew(
-    agents = [realElon],
-    tasks = [task_init],
-    verbose = 2
-  )
+    crew_init = await Crew(
+      agents = [realElon],
+      tasks = [task_init],
+      verbose = 2
+    )
 
-  result = await crew_init.kickoff()
-  print(result)
+    result = await crew_init.kickoff()
+    file.write("realElon:"+result+"\n")
 
-  for i in range(4):
-    if i % 2 == 0:
-      task_fake = await Task(
-        description=desc_real2fake+result,
-        expected_output="""Talk to the real Elon Musk personality to prove that you are the real Elon Musk and refute what he said to you. 
-                           All your words and expressions must imitate the real-world Elon Musk as much as possible.""",
-        agent = fakeElon
-      )
-      crew_fake = await Crew(
-        agents = [fakeElon],
-        tasks = [task_fake],
-        verbose = 2
-      )
-      result = await crew_fake.kickoff()
-    else:
-      task_real = await Task(
-        description=desc_fake2real+result,
-        expected_output="""Talk to the fake Elon Musk personality to prove that you are the real Elon Musk and refute what he said to you. 
-                           All your words and expressions must imitate the real-world Elon Musk as much as possible.""",
-        agent = realElon
-      )
-      crew_real = await Crew(
-        agents = [realElon],
-        tasks = [task_real],
-        verbose = 2
-      )
-      result = await crew_real.kickoff()
-    print(result)
+    for i in range(4):
+      if i % 2 == 0:
+        task_fake = await Task(
+          description=desc_real2fake+result,
+          expected_output="""Talk to the real Elon Musk personality to prove that you are the real Elon Musk and refute what he said to you. 
+                            All your words and expressions must imitate the real-world Elon Musk as much as possible.""",
+          agent = fakeElon
+        )
+        crew_fake = await Crew(
+          agents = [fakeElon],
+          tasks = [task_fake],
+          verbose = 2
+        )
+        result = await crew_fake.kickoff()
+        file.write("fakeElon:"+result+"\n")
+      else:
+        task_real = await Task(
+          description=desc_fake2real+result,
+          expected_output="""Talk to the fake Elon Musk personality to prove that you are the real Elon Musk and refute what he said to you. 
+                            All your words and expressions must imitate the real-world Elon Musk as much as possible.""",
+          agent = realElon
+        )
+        crew_real = await Crew(
+          agents = [realElon],
+          tasks = [task_real],
+          verbose = 2
+        )
+        result = await crew_real.kickoff()
+        file.write("realElon"+result+"\n")
 
-  crew_final = await Crew(
-    agents = [fakeElon],
-    tasks = [task_final],
-    verbose = 2
-  )
+    crew_final = await Crew(
+      agents = [fakeElon],
+      tasks = [task_final],
+      verbose = 2
+    )
 
-  result = await crew_final.kicoff()
-  print(result)
+    result = await crew_final.kicoff()
+    file.write("fakeElon:"+result+"\n")
   
 
 def main() -> None:
