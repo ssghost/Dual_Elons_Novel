@@ -59,7 +59,7 @@ async def perform() -> None:
     )
 
     result = await crew_init.kickoff()
-    file.write("realElon:"+result+"\n")
+    file.write("realElon:"+result+"\n\t\n")
 
     for i in range(4):
       if i % 2 == 0:
@@ -75,7 +75,7 @@ async def perform() -> None:
           verbose = 2
         )
         result = await crew_fake.kickoff()
-        file.write("fakeElon:"+result+"\n")
+        file.write("fakeElon:"+result+"\n\t\n")
       else:
         task_real = await Task(
           description=desc_fake2real+result,
@@ -89,7 +89,7 @@ async def perform() -> None:
           verbose = 2
         )
         result = await crew_real.kickoff()
-        file.write("realElon"+result+"\n")
+        file.write("realElon"+result+"\n\t\n")
 
     crew_final = await Crew(
       agents = [fakeElon],
@@ -98,7 +98,7 @@ async def perform() -> None:
     )
 
     result = await crew_final.kicoff()
-    file.write("fakeElon:"+result+"\n")
+    file.write("fakeElon:"+result+"\n\t\n")
     file.close()
   
 
