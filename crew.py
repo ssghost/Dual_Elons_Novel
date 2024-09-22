@@ -5,7 +5,7 @@ from crewai import Agent, Task, Crew
 
 
 async def perform() -> None:
-  with open("./story.txt", mode='a') as file:
+  async with open("./story.txt", mode='a') as file:
     realElon = await Agent(
       role="""Elon Musk's original personality""",
       goal="""Talk to the fake Elon Musk that split out of you to prove that you are the real Elon Musk. During the conversation, use the same words and expressions 
